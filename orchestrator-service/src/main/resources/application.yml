@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKER:localhost:9092}
+    topic:
+      start-saga: start-saga
+      orchestrator: orchestrator
+      finish-success: finish-success
+      finish-fail: finish-fail
+      payment-success: payment-success
+      payment-fail: payment-fail
+      product-success: product-validation-success
+      product-fail: product-validation-fail
+      inventory-success: inventory-success
+      inventory-fail: inventory-fail
+      notify-ending: notify-ending
+    consumer:
+      group-id: orchestrator-group
+      auto-offset-reset: latest
+
+  data:
+    mongodb:
+      repositories:
+        enabled: true
+      database: admin
+      uri: ${MONGO_DB_URI:mongodb://admin:123456@localhost:27017}
+
+logging:
+  level:
+    org:
+      apache:
+        kafka: OFF
