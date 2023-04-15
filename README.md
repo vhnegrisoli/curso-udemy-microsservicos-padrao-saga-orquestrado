@@ -2,6 +2,8 @@
 
 Repositório contendo o projeto desenvolvido do curso Arquitetura de Microsserviços: Padrão Saga Orquestrado, ministrado por mim para a plataforma Udemy.
 
+Para acessar o curso na plataforma, basta acessar esta URL: https://www.udemy.com/course/arquitetura-microsservicos-padrao-saga-orquestrado/ (ainda não publicado)
+
 ## Tecnologias
 
 * **Java 17**
@@ -29,7 +31,7 @@ No curso, desenvolveremos a seguinte aquitetura:
 Em nossa arquitetura, teremos 5 serviços:
 
 * **Order-Service**: microsserviço responsável apenas por gerar um pedido inicial, e receber uma notificação. Aqui que teremos endpoints REST para inciar o processo e recuperar os dados dos eventos. O banco de dados utilizado será o MongoDB.
-* **Orchestrator-Service**: microsserviço responsável por orquestrar todo o fluxo de execução da Saga, ele que saberá qual microsserviço foi executado e em qual estado, e para qual será o próximo microsserviço a ser enviado, este microsserviço também irá salvar o processo dos eventos. O banco de dados utilizado será o MongoDB.
+* **Orchestrator-Service**: microsserviço responsável por orquestrar todo o fluxo de execução da Saga, ele que saberá qual microsserviço foi executado e em qual estado, e para qual será o próximo microsserviço a ser enviado, este microsserviço também irá salvar o processo dos eventos. Este serviço não possui banco de dados.
 * **Product-Validation-Service**: microsserviço responsável por validar se o produto informado no pedido existe e está válido. Este microsserviço guardará a validação de um produto para o ID de um pedido. O banco de dados utilizado será o PostgreSQL.
 * **Payment-Service**: microsserviço responsável por realizar um pagamento com base nos valores unitários e quantidades informadas no pedido. Este microsserviço guardará a informação de pagamento de um pedido. O banco de dados utilizado será o PostgreSQL.
 * **Inventory-Service**: microsserviço responsável por realizar a baixa do estoque dos produtos de um pedido. Este microsserviço guardará a informação da baixa de um produto para o ID de um pedido. O banco de dados utilizado será o PostgreSQL.
@@ -38,17 +40,44 @@ Todos os serviços da arquitetura irão subir através do arquivo **docker-compo
 
 ## Execução do projeto
 
+Há várias maneiras de executar os projetos:
+
+1. Executando tudo via `docker-compose`
+2. Executando tudo via `script` de automação que eu disponibilizei (`build.py`)
+3. Executando apenas os serviços de bancos de dados e message broker (Kafka) separadamente
+4. Executando as aplicações manualmente via CLI (`java -jar` ou `gradle bootRun` ou via IntelliJ)
+
+### 01 - Execução geral via docker-compose
+
+Basta executar o comando no diretório raiz do repositório:
+
+`docker-compose up --build -d`
+
+**Obs.: para rodar tudo desta maneira, é necessário realizar o build das 5 aplicações, veja nos passos abaixo sobre como fazer isto.**
+
+### 02 - Execução geral via automação com script em Python
+
+Basta executar o arquivo `build.py`. Para isto, **é necessário ter o Python 3 instalado**.
+
+Para executar, basta apenas executar o seguinte comando no diretório raiz do repositório:
+
+`python build.py`
+
+Será realizado o `build` de todas as aplicações, removidos todos os containers e em sequência, será rodado o `docker-compose`.
+
 Para rodar as aplicações, será necessário ter instalado:
 
 * **Docker**
 * **Java 17**
 * **Gradle 7.6 ou superior**
 
-### Executando os serviços de bancos de dados e Message Broker
+### 03 - Executando os serviços de bancos de dados e Message Broker
 
 Para que seja possível executar os serviços de bancos de dados e Message Broker, como MongoDB, PostgreSQL e Apache Kafka, basta ir no diretório raiz do repositório, onde encontra-se o arquivo `docker-compose.yml` e executar o comando:
 
-`docker-compose up --build -d`
+`docker-compose up --build -d order-db kafka product-db payment-db inventory-db`
+
+Como queremos rodar apenas os serviços de bancos de dados e Message Broker, é necessário informá-los no comando do `docker-compose`, caso contrário, as aplicações irão subir também.
 
 Para parar todos os containers, basta rodar:
 
@@ -59,7 +88,7 @@ Ou então:
 `docker stop ($docker ps -aq)`
 `docker container prune -f`
 
-### Executando os projetos
+### 04 - Executando manualmente via CLI
 
 Antes da execução do projeto, realize o `build` da aplicação indo no diretório raiz e executando o comando:
 
