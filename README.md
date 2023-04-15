@@ -124,8 +124,7 @@ As aplicações executarão nas seguintes portas:
 * PostgreSQL (Product-DB): 5432
 * PostgreSQL (Payment-DB): 5433
 * PostgreSQL (Inventory-DB): 5434
-* MongoDB (Order-DB): 28017
-* MongoDB (Orchestrator-DB): 28017
+* MongoDB (Order-DB): 27017
 
 ### Acessando tópicos com Redpanda Console
 
