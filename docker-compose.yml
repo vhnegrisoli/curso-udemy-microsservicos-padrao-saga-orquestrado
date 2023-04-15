@@ -97,21 +97,24 @@ services:
     container_name: order-service
     depends_on:
       - order-db
+      - kafka
     networks:
       - orchestrator-saga
     environment:
-      - KAFKA_BROKER=kafka:9092
-      - MONGO_DB_URI=mongodb://admin:123456@order-db:28017
+      - KAFKA_BROKER=kafka:29092
+      - MONGO_DB_URI=mongodb://admin:123456@order-db:27017
     ports:
       - 3000:3000
 
   orchestrator-service:
     build: './orchestrator-service'
     container_name: orchestrator-service
+    depends_on:
+      - kafka
     networks:
       - orchestrator-saga
     environment:
-      - KAFKA_BROKER=kafka:9092
+      - KAFKA_BROKER=kafka:29092
     ports:
       - 8080:8080
 
@@ -120,10 +123,11 @@ services:
     container_name: product-validation-service
     depends_on:
       - product-db
+      - kafka
     networks:
       - orchestrator-saga
     environment:
-      - KAFKA_BROKER=kafka:9092
+      - KAFKA_BROKER=kafka:29092
       - DB_HOST=product-db
       - DB_PORT=5432
       - DB_NAME=product-db
@@ -137,10 +141,11 @@ services:
     container_name: payment-service
     depends_on:
       - payment-db
+      - kafka
     networks:
       - orchestrator-saga
     environment:
-      - KAFKA_BROKER=kafka:9092
+      - KAFKA_BROKER=kafka:29092
       - DB_HOST=payment-db
       - DB_PORT=5432
       - DB_NAME=payment-db
@@ -154,10 +159,11 @@ services:
     container_name: inventory-service
     depends_on:
       - inventory-db
+      - kafka
     networks:
       - orchestrator-saga
     environment:
-      - KAFKA_BROKER=kafka:9092
+      - KAFKA_BROKER=kafka:29092
       - DB_HOST=inventory-db
       - DB_PORT=5432
       - DB_NAME=inventory-db
