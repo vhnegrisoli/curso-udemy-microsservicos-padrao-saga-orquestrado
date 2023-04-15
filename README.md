@@ -47,6 +47,12 @@ Há várias maneiras de executar os projetos:
 3. Executando apenas os serviços de bancos de dados e message broker (Kafka) separadamente
 4. Executando as aplicações manualmente via CLI (`java -jar` ou `gradle bootRun` ou via IntelliJ)
 
+Para rodar as aplicações, será necessário ter instalado:
+
+* **Docker**
+* **Java 17**
+* **Gradle 7.6 ou superior**
+
 ### 01 - Execução geral via docker-compose
 
 Basta executar o comando no diretório raiz do repositório:
@@ -64,12 +70,6 @@ Para executar, basta apenas executar o seguinte comando no diretório raiz do re
 `python build.py`
 
 Será realizado o `build` de todas as aplicações, removidos todos os containers e em sequência, será rodado o `docker-compose`.
-
-Para rodar as aplicações, será necessário ter instalado:
-
-* **Docker**
-* **Java 17**
-* **Gradle 7.6 ou superior**
 
 ### 03 - Executando os serviços de bancos de dados e Message Broker
 
