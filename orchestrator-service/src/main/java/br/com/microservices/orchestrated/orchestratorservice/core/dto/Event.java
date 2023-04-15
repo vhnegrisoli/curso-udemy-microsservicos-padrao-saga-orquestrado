@@ -25,6 +25,7 @@ public class Event {
 
     @Id
     private String id;
+    private String orderId;
     private String transactionId;
     private Object payload;
     private EEventSource source;

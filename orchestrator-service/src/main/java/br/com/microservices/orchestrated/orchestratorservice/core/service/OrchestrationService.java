@@ -76,7 +76,7 @@ public class OrchestrationService {
     }
 
     private ETopics getTopic(Event event) {
-        return sagaExecutionController.getNextTopic(event.getSource(), event.getStatus(), event.getCurrentExecuted());
+        return sagaExecutionController.getNextTopic(event);
     }
 
     private void addHistory(Event event, String message) {

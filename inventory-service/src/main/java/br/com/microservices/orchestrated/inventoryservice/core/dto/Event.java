@@ -20,6 +20,7 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 public class Event {
 
     private String id;
+    private String orderId;
     private String transactionId;
     private Order payload;
     private String source;

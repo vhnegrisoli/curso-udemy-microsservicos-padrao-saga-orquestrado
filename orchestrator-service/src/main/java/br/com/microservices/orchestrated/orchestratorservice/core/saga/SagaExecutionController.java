@@ -1,5 +1,6 @@
 package br.com.microservices.orchestrated.orchestratorservice.core.saga;
 
+import br.com.microservices.orchestrated.orchestratorservice.core.dto.Event;
 import br.com.microservices.orchestrated.orchestratorservice.core.enums.EEventSource;
 import br.com.microservices.orchestrated.orchestratorservice.core.enums.EFailExecution;
 import br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaStatus;
@@ -101,25 +102,23 @@ public class SagaExecutionController {
         return this;
     }
 
-    public ETopics getNextTopic(EEventSource source,
-                                ESagaStatus status,
-                                EFailExecution currentExecutionFailed) {
-        if (isEmpty(source) || isEmpty(status) || isEmpty(currentExecutionFailed)) {
+    public ETopics getNextTopic(Event event) {
+        if (isEmpty(event.getSource())
+            || isEmpty(event.getStatus())
+            || isEmpty(event.getCurrentExecuted())) {
             throw new RuntimeException("Source, status and current execution must be informed.");
         }
-        var topic = findBySourceStatusAndCurrentExecutionFail(source, status, currentExecutionFailed);
-        logCurrentSaga(source, status, currentExecutionFailed, topic);
+        var topic = findBySourceStatusAndCurrentExecutionFail(event);
+        logCurrentSaga(event, topic);
         return topic;
     }
 
-    private ETopics findBySourceStatusAndCurrentExecutionFail(EEventSource source,
-                                                              ESagaStatus status,
-                                                              EFailExecution currentExecutionFailed) {
+    private ETopics findBySourceStatusAndCurrentExecutionFail(Event event) {
         return HANDLERS
             .stream()
-            .filter(handler -> source.equals(handler.getSource())
-                && status.equals(handler.getStatus())
-                && currentExecutionFailed.equals(handler.getCurrentExecuted())
+            .filter(handler -> event.getSource().equals(handler.getSource())
+                && event.getStatus().equals(handler.getStatus())
+                && event.getCurrentExecuted().equals(handler.getCurrentExecuted())
             )
             .map(SagaHandler::getTopic)
             .map(ETopics::getEnum)
@@ -127,20 +126,17 @@ public class SagaExecutionController {
             .orElseThrow(() -> new RuntimeException("Topic not found."));
     }
 
-    private void logCurrentSaga(EEventSource source,
-                                ESagaStatus status,
-                                EFailExecution currentExecutionFailed,
-                                ETopics topic) {
-        var isFail = FAIL.equals(status);
-        if (isFail) {
-            var isCurrentExecuted = CURRENT_FAIL_PENDING_ROLLBACK.equals(currentExecutionFailed);
-            if (isCurrentExecuted) {
-                log.info("### CURRENT SAGA: '{}' | SENDING TO ROLLBACK PREVIOUS SERVICE | NEXT TOPIC '{}'", source, topic);
+    private void logCurrentSaga(Event event, ETopics topic) {
+        if (FAIL.equals(event.getStatus())) {
+            if (CURRENT_FAIL_PENDING_ROLLBACK.equals(event.getCurrentExecuted())) {
+                log.info("### CURRENT SAGA: '{}' | SENDING TO ROLLBACK PREVIOUS SERVICE | NEXT TOPIC '{}'",
+                    event.getSource(), topic);
             } else {
-                log.info("### CURRENT SAGA: '{}' | SENDING TO ROLLBACK CURRENT SERVICE | NEXT TOPIC '{}'", source, topic);
+                log.info("### CURRENT SAGA: '{}' | SENDING TO ROLLBACK CURRENT SERVICE | NEXT TOPIC '{}'",
+                    event.getSource(), topic);
             }
         } else {
-            log.info("### CURRENT SAGA: '{}' | SUCCESS | NEXT TOPIC '{}'", source, topic);
+            log.info("### CURRENT SAGA: '{}' | SUCCESS | NEXT TOPIC '{}'", event.getSource(), topic);
         }
     }
 }
