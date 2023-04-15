@@ -2,7 +2,7 @@ package br.com.microservices.orchestrated.orchestratorservice.core.saga;
 
 import br.com.microservices.orchestrated.orchestratorservice.core.dto.Event;
 import br.com.microservices.orchestrated.orchestratorservice.core.enums.EEventSource;
-import br.com.microservices.orchestrated.orchestratorservice.core.enums.EFailExecution;
+import br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaExecution;
 import br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaStatus;
 import br.com.microservices.orchestrated.orchestratorservice.core.enums.ETopics;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static br.com.microservices.orchestrated.orchestratorservice.core.enums.EEventSource.*;
-import static br.com.microservices.orchestrated.orchestratorservice.core.enums.EFailExecution.*;
+import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaExecution.*;
 import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaStatus.FAIL;
 import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaStatus.SUCCESS;
 import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ETopics.*;
@@ -79,7 +79,7 @@ public class SagaExecutionController {
 
     private SagaExecutionController defineFailedSaga(EEventSource source,
                                                      ETopics topic,
-                                                     EFailExecution failExecution) {
+                                                     ESagaExecution failExecution) {
         var handler = buildHandler(source, FAIL, topic, failExecution);
         return createHandler(handler);
     }
@@ -87,7 +87,7 @@ public class SagaExecutionController {
     private SagaHandler buildHandler(EEventSource source,
                                      ESagaStatus status,
                                      ETopics topic,
-                                     EFailExecution currentFailExecuted) {
+                                     ESagaExecution currentFailExecuted) {
         return SagaHandler
             .builder()
             .source(source)
@@ -108,12 +108,12 @@ public class SagaExecutionController {
             || isEmpty(event.getCurrentExecuted())) {
             throw new RuntimeException("Source, status and current execution must be informed.");
         }
-        var topic = findBySourceStatusAndCurrentExecutionFail(event);
+        var topic = findBySourceStatusAndCurrentExecution(event);
         logCurrentSaga(event, topic);
         return topic;
     }
 
-    private ETopics findBySourceStatusAndCurrentExecutionFail(Event event) {
+    private ETopics findBySourceStatusAndCurrentExecution(Event event) {
         return HANDLERS
             .stream()
             .filter(handler -> event.getSource().equals(handler.getSource())

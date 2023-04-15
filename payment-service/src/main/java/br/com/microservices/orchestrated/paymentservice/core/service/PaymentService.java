@@ -2,7 +2,7 @@ package br.com.microservices.orchestrated.paymentservice.core.service;
 
 import br.com.microservices.orchestrated.paymentservice.core.dto.Event;
 import br.com.microservices.orchestrated.paymentservice.core.dto.History;
-import br.com.microservices.orchestrated.paymentservice.core.enums.EFailExecution;
+import br.com.microservices.orchestrated.paymentservice.core.enums.ESagaExecution;
 import br.com.microservices.orchestrated.paymentservice.core.enums.EPaymentStatus;
 import br.com.microservices.orchestrated.paymentservice.core.enums.ESagaStatus;
 import br.com.microservices.orchestrated.paymentservice.core.model.Payment;
@@ -85,7 +85,7 @@ public class PaymentService {
     private void handleSuccess(Event event) {
         event.setStatus(ESagaStatus.SUCCESS);
         event.setSource(CURRENT_SOURCE);
-        event.setCurrentExecuted(EFailExecution.CURRENT_IS_SUCCESS);
+        event.setCurrentExecuted(ESagaExecution.CURRENT_IS_SUCCESS);
         addHistory(event, "Payment realized successfully!");
     }
 
@@ -103,7 +103,7 @@ public class PaymentService {
     private void handleFailCurrentNotExecuted(Event event, String message) {
         event.setStatus(ESagaStatus.FAIL);
         event.setSource(CURRENT_SOURCE);
-        event.setCurrentExecuted(EFailExecution.CURRENT_FAIL_PENDING_ROLLBACK);
+        event.setCurrentExecuted(ESagaExecution.CURRENT_FAIL_PENDING_ROLLBACK);
         addHistory(event, "Fail to realize payment: ".concat(message));
     }
 
@@ -111,7 +111,7 @@ public class PaymentService {
         changePaymentStatusToRefund(event);
         event.setStatus(ESagaStatus.FAIL);
         event.setSource(CURRENT_SOURCE);
-        event.setCurrentExecuted(EFailExecution.CURRENT_FAIL_EXECUTED_ROLLBACK);
+        event.setCurrentExecuted(ESagaExecution.CURRENT_FAIL_EXECUTED_ROLLBACK);
         addHistory(event, "Rollback executed for payment!");
         producer.sendEvent(jsonUtil.toJson(event));
     }

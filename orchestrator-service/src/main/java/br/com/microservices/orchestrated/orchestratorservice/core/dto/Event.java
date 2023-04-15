@@ -1,7 +1,7 @@
 package br.com.microservices.orchestrated.orchestratorservice.core.dto;
 
 import br.com.microservices.orchestrated.orchestratorservice.core.enums.EEventSource;
-import br.com.microservices.orchestrated.orchestratorservice.core.enums.EFailExecution;
+import br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaExecution;
 import br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +30,7 @@ public class Event {
     private Object payload;
     private EEventSource source;
     private ESagaStatus status;
-    private EFailExecution currentExecuted;
+    private ESagaExecution currentExecuted;
     private List<History> eventHistory;
     private LocalDateTime createdAt;
 

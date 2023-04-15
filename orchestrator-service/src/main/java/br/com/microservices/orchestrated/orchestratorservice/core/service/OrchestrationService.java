@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 import static br.com.microservices.orchestrated.orchestratorservice.core.enums.EEventSource.ORCHESTRATOR;
-import static br.com.microservices.orchestrated.orchestratorservice.core.enums.EFailExecution.CURRENT_FAIL_PENDING_ROLLBACK;
-import static br.com.microservices.orchestrated.orchestratorservice.core.enums.EFailExecution.CURRENT_IS_SUCCESS;
+import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaExecution.CURRENT_FAIL_PENDING_ROLLBACK;
+import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaExecution.CURRENT_IS_SUCCESS;
 import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaStatus.FAIL;
 import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaStatus.SUCCESS;
 

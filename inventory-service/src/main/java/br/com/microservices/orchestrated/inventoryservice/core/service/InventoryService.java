@@ -1,7 +1,7 @@
 package br.com.microservices.orchestrated.inventoryservice.core.service;
 
 import br.com.microservices.orchestrated.inventoryservice.core.dto.*;
-import br.com.microservices.orchestrated.inventoryservice.core.enums.EFailExecution;
+import br.com.microservices.orchestrated.inventoryservice.core.enums.ESagaExecution;
 import br.com.microservices.orchestrated.inventoryservice.core.enums.ESagaStatus;
 import br.com.microservices.orchestrated.inventoryservice.core.model.Inventory;
 import br.com.microservices.orchestrated.inventoryservice.core.model.OrderInventory;
@@ -89,7 +89,7 @@ public class InventoryService {
     private void handleSuccess(Event event) {
         event.setStatus(ESagaStatus.SUCCESS);
         event.setSource(CURRENT_SOURCE);
-        event.setCurrentExecuted(EFailExecution.CURRENT_IS_SUCCESS);
+        event.setCurrentExecuted(ESagaExecution.CURRENT_IS_SUCCESS);
         addHistory(event, "Inventory updated successfully!");
     }
 
@@ -107,7 +107,7 @@ public class InventoryService {
     private void handleFailCurrentNotExecuted(Event event, String message) {
         event.setStatus(ESagaStatus.FAIL);
         event.setSource(CURRENT_SOURCE);
-        event.setCurrentExecuted(EFailExecution.CURRENT_FAIL_PENDING_ROLLBACK);
+        event.setCurrentExecuted(ESagaExecution.CURRENT_FAIL_PENDING_ROLLBACK);
         addHistory(event, "Fail to update inventory: ".concat(message));
     }
 
@@ -115,7 +115,7 @@ public class InventoryService {
         returnInventoryToPreviousValues(event);
         event.setStatus(ESagaStatus.FAIL);
         event.setSource(CURRENT_SOURCE);
-        event.setCurrentExecuted(EFailExecution.CURRENT_FAIL_EXECUTED_ROLLBACK);
+        event.setCurrentExecuted(ESagaExecution.CURRENT_FAIL_EXECUTED_ROLLBACK);
         addHistory(event, "Rollback executed for inventory!");
         producer.sendEvent(jsonUtil.toJson(event));
     }
