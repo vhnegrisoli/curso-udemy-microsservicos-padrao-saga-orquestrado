@@ -12,6 +12,7 @@ Repositório contendo o projeto desenvolvido do curso Arquitetura de Microsservi
 * **MongoDB**
 * **Docker**
 * **docker-compose**
+* **Redpanda Console**
 
 # Ferramentas utilizadas
 
@@ -81,3 +82,33 @@ http://localhost:3000/swagger-ui.html
 Você chegará nesta página:
 
 ![Swagger](https://github.com/vhnegrisoli/curso-udemy-microsservicos-padrao-saga-orquestrado/blob/main/Conte%C3%BAdos/Documentacao.png)
+
+As aplicações executarão nas seguintes portas:
+
+* Order-Service: 3000
+* Orchestrator-Service: 8080
+* Product-Validation-Service: 8090
+* Payment-Service: 8091
+* Inventory-Service: 8092
+* Apache Kafka: 9092
+* Redpanda Console: 8081
+* PostgreSQL (Product-DB): 5432
+* PostgreSQL (Payment-DB): 5433
+* PostgreSQL (Inventory-DB): 5434
+* MongoDB (Order-DB): 28017
+* MongoDB (Orchestrator-DB): 28017
+
+### Acessando tópicos com Redpanda Console
+
+Para acessar o Redpanda Console e visualizar tópicos e publicar eventos, basta acessar:
+
+http://localhost:8081
+
+Você chegará nesta página:
+
+![Redpanda](https://github.com/vhnegrisoli/curso-udemy-microsservicos-padrao-saga-orquestrado/blob/main/Conte%C3%BAdos/Redpanda%20Kafka.png)
+
+## Autor
+
+### Victor Hugo Negrisoli
+### Desenvolvedor de Software Back-End
