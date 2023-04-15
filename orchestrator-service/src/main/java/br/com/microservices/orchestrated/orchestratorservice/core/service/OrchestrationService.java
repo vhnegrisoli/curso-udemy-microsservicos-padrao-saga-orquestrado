@@ -4,7 +4,6 @@ import br.com.microservices.orchestrated.orchestratorservice.core.dto.Event;
 import br.com.microservices.orchestrated.orchestratorservice.core.dto.History;
 import br.com.microservices.orchestrated.orchestratorservice.core.enums.ETopics;
 import br.com.microservices.orchestrated.orchestratorservice.core.producer.SagaOrchestratorProducer;
-import br.com.microservices.orchestrated.orchestratorservice.core.repository.EventRepository;
 import br.com.microservices.orchestrated.orchestratorservice.core.saga.SagaExecutionController;
 import br.com.microservices.orchestrated.orchestratorservice.core.utils.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -22,16 +21,13 @@ import static br.com.microservices.orchestrated.orchestratorservice.core.enums.E
 @Service
 public class OrchestrationService {
 
-    private final EventRepository repository;
     private final SagaOrchestratorProducer producer;
     private final JsonUtil jsonUtil;
     private final SagaExecutionController sagaExecutionController;
 
-    public OrchestrationService(EventRepository repository,
-                                SagaOrchestratorProducer producer,
+    public OrchestrationService(SagaOrchestratorProducer producer,
                                 JsonUtil jsonUtil,
                                 SagaExecutionController sagaExecutionController) {
-        this.repository = repository;
         this.producer = producer;
         this.jsonUtil = jsonUtil;
         this.sagaExecutionController = sagaExecutionController.defineSagas();
@@ -44,7 +40,6 @@ public class OrchestrationService {
         var topic = getTopic(event);
         log.info("SAGA STARTED!");
         addHistory(event, "Saga started!");
-        repository.save(event);
         producer.sendEvent(jsonUtil.toJson(event), topic.getTopic());
     }
 
@@ -54,7 +49,6 @@ public class OrchestrationService {
         event.setCurrentExecuted(CURRENT_IS_SUCCESS);
         log.info("SAGA FINISHED SUCCESSFULLY FOR EVENT {}!", event.getId());
         addHistory(event, "Saga finished successfully!");
-        repository.save(event);
         notifyFinishedSaga(event);
     }
 
@@ -64,14 +58,12 @@ public class OrchestrationService {
         event.setCurrentExecuted(CURRENT_FAIL_PENDING_ROLLBACK);
         log.info("SAGA FINISHED WITH ERRORS FOR EVENT {}!", event.getId());
         addHistory(event, "Saga finished with errors!");
-        repository.save(event);
         notifyFinishedSaga(event);
     }
 
     public void continueSaga(Event event) {
         var topic = getTopic(event);
         log.info("SAGA CONTINUING FOR EVENT {}", event.getId());
-        repository.save(event);
         producer.sendEvent(jsonUtil.toJson(event), topic.getTopic());;
     }
 

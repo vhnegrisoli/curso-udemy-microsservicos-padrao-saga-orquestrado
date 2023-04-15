@@ -20,13 +20,6 @@ spring:
       group-id: orchestrator-group
       auto-offset-reset: latest
 
-  data:
-    mongodb:
-      repositories:
-        enabled: true
-      database: admin
-      uri: ${MONGO_DB_URI:mongodb://admin:123456@localhost:27017}
-
 logging:
   level:
     org:
