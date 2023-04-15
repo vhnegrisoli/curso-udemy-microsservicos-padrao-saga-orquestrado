@@ -1,4 +1,4 @@
-package br.com.microservices.orchestrated.inventoryservice.kafka;
+package br.com.microservices.orchestrated.inventoryservice.config.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
