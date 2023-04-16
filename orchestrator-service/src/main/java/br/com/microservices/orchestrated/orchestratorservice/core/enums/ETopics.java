@@ -1,5 +1,6 @@
 package br.com.microservices.orchestrated.orchestratorservice.core.enums;
 
+import br.com.microservices.orchestrated.orchestratorservice.config.exception.ValidationException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -28,6 +29,6 @@ public enum ETopics {
             .stream(ETopics.values())
             .filter(topic -> topic.getTopic().equals(value))
             .findFirst()
-            .orElseThrow(() -> new RuntimeException("Enum not found by value."));
+            .orElseThrow(() -> new ValidationException("Enum not found by value."));
     }
 }

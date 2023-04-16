@@ -1,9 +1,10 @@
 package br.com.microservices.orchestrated.paymentservice.core.service;
 
+import br.com.microservices.orchestrated.paymentservice.config.exception.ValidationException;
 import br.com.microservices.orchestrated.paymentservice.core.dto.Event;
 import br.com.microservices.orchestrated.paymentservice.core.dto.History;
-import br.com.microservices.orchestrated.paymentservice.core.enums.ESagaExecution;
 import br.com.microservices.orchestrated.paymentservice.core.enums.EPaymentStatus;
+import br.com.microservices.orchestrated.paymentservice.core.enums.ESagaExecution;
 import br.com.microservices.orchestrated.paymentservice.core.enums.ESagaStatus;
 import br.com.microservices.orchestrated.paymentservice.core.model.Payment;
 import br.com.microservices.orchestrated.paymentservice.core.producer.KafkaProducer;
@@ -22,7 +23,6 @@ public class PaymentService {
 
     private static final String CURRENT_SOURCE = "PAYMENT_SERVICE";
     private static final double MIN_VALUE_AMOUNT = 0.1;
-    private static final double ZERO_VALUE = 0.0;
 
     private final JsonUtil jsonUtil;
     private final KafkaProducer producer;
@@ -47,7 +47,7 @@ public class PaymentService {
 
     private void checkCurrentValidation(String orderId, String transactionId) {
         if (paymentRepository.existsByOrderIdAndTransactionId(orderId, transactionId)) {
-            throw new RuntimeException("There's another transactionId for this validation.");
+            throw new ValidationException("There's another transactionId for this validation.");
         }
     }
 
@@ -69,7 +69,7 @@ public class PaymentService {
 
     private void validateAmount(double amount) {
         if (amount < MIN_VALUE_AMOUNT) {
-            throw new RuntimeException("The minimal amount available is ".concat(String.valueOf(MIN_VALUE_AMOUNT)));
+            throw new ValidationException("The minimal amount available is ".concat(String.valueOf(MIN_VALUE_AMOUNT)));
         }
     }
 
@@ -125,7 +125,7 @@ public class PaymentService {
     private Payment findByOrderIdAndTransactionId(String orderId, String transactionId) {
         return paymentRepository
             .findByOrderIdAndTransactionId(orderId, transactionId)
-            .orElseThrow(() -> new RuntimeException("Payment not found by orderID and transactionID"));
+            .orElseThrow(() -> new ValidationException("Payment not found by orderID and transactionID"));
     }
 
     private void save(Payment payment) {

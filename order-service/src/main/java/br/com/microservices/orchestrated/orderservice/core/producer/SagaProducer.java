@@ -12,14 +12,12 @@ public class SagaProducer {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-    public boolean sendEvent(String payload, String topic) {
+    public void sendEvent(String payload, String topic) {
         try {
             log.info("Sending event to topic {} with data {}", topic, payload);
             kafkaTemplate.send(topic, payload);
-            return true;
         } catch (Exception ex) {
             log.error("Error trying to send data to topic {} with data {}", topic, payload, ex);
-            return false;
         }
     }
 }

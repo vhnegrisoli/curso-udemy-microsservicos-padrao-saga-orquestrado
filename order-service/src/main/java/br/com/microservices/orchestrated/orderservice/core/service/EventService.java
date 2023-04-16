@@ -1,5 +1,6 @@
 package br.com.microservices.orchestrated.orderservice.core.service;
 
+import br.com.microservices.orchestrated.orderservice.config.exception.ValidationException;
 import br.com.microservices.orchestrated.orderservice.core.dto.EventFilters;
 import br.com.microservices.orchestrated.orderservice.core.model.Event;
 import br.com.microservices.orchestrated.orderservice.core.repository.EventRepository;
@@ -45,19 +46,19 @@ public class EventService {
 
     private void validateEmptyFilters(EventFilters filters) {
         if (isEmpty(filters.getTransactionId()) && isEmpty(filters.getTransactionId())) {
-            throw new RuntimeException("OrderID or TransactionID must be informed.");
+            throw new ValidationException("OrderID or TransactionID must be informed.");
         }
     }
 
     private Event findByTransactionId(String transactionId) {
         return repository
             .findByTransactionId(transactionId)
-            .orElseThrow(() -> new RuntimeException("Event not found by transactionId."));
+            .orElseThrow(() -> new ValidationException("Event not found by transactionId."));
     }
 
     private Event findByOrderId(String orderId) {
         return repository
             .findByOrderId(orderId)
-            .orElseThrow(() -> new RuntimeException("Event not found by orderID."));
+            .orElseThrow(() -> new ValidationException("Event not found by orderID."));
     }
 }

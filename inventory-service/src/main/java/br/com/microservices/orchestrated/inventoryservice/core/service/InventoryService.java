@@ -1,6 +1,10 @@
 package br.com.microservices.orchestrated.inventoryservice.core.service;
 
-import br.com.microservices.orchestrated.inventoryservice.core.dto.*;
+import br.com.microservices.orchestrated.inventoryservice.config.exception.ValidationException;
+import br.com.microservices.orchestrated.inventoryservice.core.dto.Event;
+import br.com.microservices.orchestrated.inventoryservice.core.dto.History;
+import br.com.microservices.orchestrated.inventoryservice.core.dto.Order;
+import br.com.microservices.orchestrated.inventoryservice.core.dto.OrderProducts;
 import br.com.microservices.orchestrated.inventoryservice.core.enums.ESagaExecution;
 import br.com.microservices.orchestrated.inventoryservice.core.enums.ESagaStatus;
 import br.com.microservices.orchestrated.inventoryservice.core.model.Inventory;
@@ -42,7 +46,7 @@ public class InventoryService {
 
     private void checkCurrentValidation(String orderId, String transactionId) {
         if (orderInventoryRepository.existsByOrderIdAndTransactionId(orderId, transactionId)) {
-            throw new RuntimeException("There's another transactionId for this validation.");
+            throw new ValidationException("There's another transactionId for this validation.");
         }
     }
 
@@ -67,7 +71,7 @@ public class InventoryService {
 
     private void checkInventory(int available, int orderQuantity) {
         if (orderQuantity > available) {
-            throw new RuntimeException("Product is out of stock!");
+            throw new ValidationException("Product is out of stock!");
         }
     }
 
@@ -135,12 +139,12 @@ public class InventoryService {
     private Inventory findById(Integer id) {
         return inventoryRepository
             .findById(id)
-            .orElseThrow(() -> new RuntimeException("Inventory not found by id."));
+            .orElseThrow(() -> new ValidationException("Inventory not found by id."));
     }
 
     private Inventory findInventoryByProductCode(String productCode) {
         return inventoryRepository
             .findByProductCode(productCode)
-            .orElseThrow(() -> new RuntimeException("Inventory not found by informed product."));
+            .orElseThrow(() -> new ValidationException("Inventory not found by informed product."));
     }
 }

@@ -16,14 +16,12 @@ public class KafkaProducer {
     @Value("${spring.kafka.topic.orchestrator}")
     private String orchestratorTopic;
 
-    public boolean sendEvent(String payload) {
+    public void sendEvent(String payload) {
         try {
             log.info("Sending event to topic {} with data {}", orchestratorTopic, payload);
             kafkaTemplate.send(orchestratorTopic, payload);
-            return true;
         } catch (Exception ex) {
             log.error("Error trying to send data to topic {} with data {}", orchestratorTopic, payload, ex);
-            return false;
         }
     }
 }

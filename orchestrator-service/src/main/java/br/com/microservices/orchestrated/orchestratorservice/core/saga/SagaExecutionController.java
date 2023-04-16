@@ -1,5 +1,6 @@
 package br.com.microservices.orchestrated.orchestratorservice.core.saga;
 
+import br.com.microservices.orchestrated.orchestratorservice.config.exception.ValidationException;
 import br.com.microservices.orchestrated.orchestratorservice.core.dto.Event;
 import br.com.microservices.orchestrated.orchestratorservice.core.enums.EEventSource;
 import br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaExecution;
@@ -106,7 +107,7 @@ public class SagaExecutionController {
         if (isEmpty(event.getSource())
             || isEmpty(event.getStatus())
             || isEmpty(event.getCurrentExecuted())) {
-            throw new RuntimeException("Source, status and current execution must be informed.");
+            throw new ValidationException("Source, status and current execution must be informed.");
         }
         var topic = findBySourceStatusAndCurrentExecution(event);
         logCurrentSaga(event, topic);
@@ -123,7 +124,7 @@ public class SagaExecutionController {
             .map(SagaHandler::getTopic)
             .map(ETopics::getEnum)
             .findFirst()
-            .orElseThrow(() -> new RuntimeException("Topic not found."));
+            .orElseThrow(() -> new ValidationException("Topic not found."));
     }
 
     private void logCurrentSaga(Event event, ETopics topic) {

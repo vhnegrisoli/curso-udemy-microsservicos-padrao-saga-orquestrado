@@ -25,7 +25,6 @@ public class OrderService {
     private final SagaProducer producer;
     private final JsonUtil jsonUtil;
     private final OrderRepository repository;
-    private final EventService eventService;
     @Value("${spring.kafka.topic.start-saga}")
     private String startSagaTopic;
 

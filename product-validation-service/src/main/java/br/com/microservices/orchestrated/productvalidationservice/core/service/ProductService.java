@@ -1,5 +1,6 @@
 package br.com.microservices.orchestrated.productvalidationservice.core.service;
 
+import br.com.microservices.orchestrated.productvalidationservice.config.exception.ValidationException;
 import br.com.microservices.orchestrated.productvalidationservice.core.dto.Event;
 import br.com.microservices.orchestrated.productvalidationservice.core.dto.History;
 import br.com.microservices.orchestrated.productvalidationservice.core.dto.OrderProducts;
@@ -49,28 +50,28 @@ public class ProductService {
 
     private void validateProductsInformed(Event event) {
         if (isEmpty(event.getPayload()) || isEmpty(event.getPayload().getProducts())) {
-            throw new RuntimeException("Product list is empty!");
+            throw new ValidationException("Product list is empty!");
         }
         if (isEmpty(event.getPayload().getId()) || isEmpty(event.getTransactionId())) {
-            throw new RuntimeException("OrderID and TransactionID must be informed!");
+            throw new ValidationException("OrderID and TransactionID must be informed!");
         }
     }
 
     private void validateProductInformed(OrderProducts product) {
         if (isEmpty(product.getProduct()) || isEmpty(product.getProduct().getCode())) {
-            throw new RuntimeException("Product must be informed!");
+            throw new ValidationException("Product must be informed!");
         }
     }
 
     private void validateExistingProduct(String code) {
         if (!productRepository.existsByCode(code)) {
-            throw new RuntimeException("Product does not exists in database!");
+            throw new ValidationException("Product does not exists in database!");
         }
     }
 
     private void checkCurrentValidation(String orderId, String transactionId) {
         if (validationRepository.existsByOrderIdAndTransactionId(orderId, transactionId)) {
-            throw new RuntimeException("There's another transactionId for this validation.");
+            throw new ValidationException("There's another transactionId for this validation.");
         }
     }
 
@@ -121,7 +122,7 @@ public class ProductService {
     private void changeValidationToFail(String orderId, String transactionId) {
         var validation = validationRepository
             .findByOrderIdAndTransactionId(orderId, transactionId)
-            .orElseThrow(() -> new RuntimeException("Validation does not exists for order and transaction."));
+            .orElseThrow(() -> new ValidationException("Validation does not exists for order and transaction."));
         validation.setSuccess(false);
         validationRepository.save(validation);
     }
