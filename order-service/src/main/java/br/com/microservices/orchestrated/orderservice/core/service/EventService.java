@@ -52,13 +52,13 @@ public class EventService {
 
     private Event findByTransactionId(String transactionId) {
         return repository
-            .findByTransactionId(transactionId)
+            .findTop1ByTransactionIdOrderByCreatedAtDesc(transactionId)
             .orElseThrow(() -> new ValidationException("Event not found by transactionId."));
     }
 
     private Event findByOrderId(String orderId) {
         return repository
-            .findByOrderId(orderId)
+            .findTop1ByOrderIdOrderByCreatedAtDesc(orderId)
             .orElseThrow(() -> new ValidationException("Event not found by orderID."));
     }
 }

@@ -25,4 +25,8 @@ public class Order {
     private LocalDateTime createdAt;
 
     private String transactionId;
+
+    private Double totalAmount;
+
+    private Integer totalItems;
 }

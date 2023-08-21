@@ -10,7 +10,7 @@ public interface EventRepository extends MongoRepository<Event, String> {
 
     List<Event> findAllByOrderByCreatedAtDesc();
 
-    Optional<Event> findByOrderId(String orderId);
+    Optional<Event> findTop1ByOrderIdOrderByCreatedAtDesc(String orderId);
 
-    Optional<Event> findByTransactionId(String transactionId);
+    Optional<Event> findTop1ByTransactionIdOrderByCreatedAtDesc(String transactionId);
 }

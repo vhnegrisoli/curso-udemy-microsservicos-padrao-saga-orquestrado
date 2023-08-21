@@ -3,6 +3,7 @@ package br.com.microservices.orchestrated.paymentservice.core.service;
 import br.com.microservices.orchestrated.paymentservice.config.exception.ValidationException;
 import br.com.microservices.orchestrated.paymentservice.core.dto.Event;
 import br.com.microservices.orchestrated.paymentservice.core.dto.History;
+import br.com.microservices.orchestrated.paymentservice.core.dto.OrderProducts;
 import br.com.microservices.orchestrated.paymentservice.core.enums.EPaymentStatus;
 import br.com.microservices.orchestrated.paymentservice.core.enums.ESagaExecution;
 import br.com.microservices.orchestrated.paymentservice.core.enums.ESagaStatus;
@@ -23,6 +24,7 @@ public class PaymentService {
 
     private static final String CURRENT_SOURCE = "PAYMENT_SERVICE";
     private static final double MIN_VALUE_AMOUNT = 0.1;
+    private static final Double REDUCE_SUM_VALUE = 0.0;
 
     private final JsonUtil jsonUtil;
     private final KafkaProducer producer;
@@ -53,13 +55,16 @@ public class PaymentService {
 
     private void createPendingPayment(Event event) {
         var totalAmount = calculateAmount(event);
+        var totalItems = calculateTotalItems(event);
         var payment = Payment
             .builder()
             .orderId(event.getPayload().getId())
             .transactionId(event.getTransactionId())
             .totalAmount(totalAmount)
+            .totalItems(totalItems)
             .build();
         save(payment);
+        setEventAmountItems(event, payment);
     }
 
     private void changePaymentToSuccess(Payment payment) {
@@ -79,7 +84,16 @@ public class PaymentService {
             .getProducts()
             .stream()
             .map(product -> product.getQuantity() * product.getProduct().getUnitValue())
-            .reduce(0.0, Double::sum);
+            .reduce(REDUCE_SUM_VALUE, Double::sum);
+    }
+
+    private int calculateTotalItems(Event event) {
+        return event
+            .getPayload()
+            .getProducts()
+            .stream()
+            .map(OrderProducts::getQuantity)
+            .reduce(REDUCE_SUM_VALUE.intValue(), Integer::sum);
     }
 
     private void handleSuccess(Event event) {
@@ -107,6 +121,11 @@ public class PaymentService {
         addHistory(event, "Fail to realize payment: ".concat(message));
     }
 
+    private void setEventAmountItems(Event event, Payment payment) {
+        event.getPayload().setTotalAmount(payment.getTotalAmount());
+        event.getPayload().setTotalItems(payment.getTotalItems());
+    }
+
     public void realizeRefund(Event event) {
         changePaymentStatusToRefund(event);
         event.setStatus(ESagaStatus.FAIL);
@@ -119,6 +138,7 @@ public class PaymentService {
     private void changePaymentStatusToRefund(Event event) {
         var payment = findByOrderIdAndTransactionId(event.getPayload().getId(), event.getTransactionId());
         payment.setStatus(EPaymentStatus.REFUND);
+        setEventAmountItems(event, payment);
         save(payment);
     }
 
