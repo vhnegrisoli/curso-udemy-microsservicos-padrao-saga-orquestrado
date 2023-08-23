@@ -45,7 +45,7 @@ public class EventService {
     }
 
     private void validateEmptyFilters(EventFilters filters) {
-        if (isEmpty(filters.getTransactionId()) && isEmpty(filters.getTransactionId())) {
+        if (isEmpty(filters.getOrderId()) && isEmpty(filters.getTransactionId())) {
             throw new ValidationException("OrderID or TransactionID must be informed.");
         }
     }
