@@ -24,7 +24,6 @@ public class Event {
     private Object payload;
     private String source;
     private String status;
-    private String currentExecuted;
     private List<Object> eventHistory;
     private LocalDateTime createdAt;
 }

@@ -1,10 +1,7 @@
 package br.com.microservices.orchestrated.orchestratorservice.core.enums;
 
-import br.com.microservices.orchestrated.orchestratorservice.config.exception.ValidationException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
@@ -23,12 +20,4 @@ public enum ETopics {
     NOTIFY_ENDING("notify-ending");
 
     private final String topic;
-
-    public static ETopics getEnum(String value) {
-        return Arrays
-            .stream(ETopics.values())
-            .filter(topic -> topic.getTopic().equals(value))
-            .findFirst()
-            .orElseThrow(() -> new ValidationException("Enum not found by value."));
-    }
 }

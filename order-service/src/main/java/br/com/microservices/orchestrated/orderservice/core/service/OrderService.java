@@ -22,6 +22,7 @@ public class OrderService {
 
     private static final String TRANSACTION_ID_PATTERN = "%s_%s";
 
+    private final EventService eventService;
     private final SagaProducer producer;
     private final JsonUtil jsonUtil;
     private final OrderRepository repository;
@@ -42,12 +43,14 @@ public class OrderService {
     }
 
     private Event createPayload(Order order) {
-        return Event
+        var event = Event
             .builder()
             .orderId(order.getId())
             .transactionId(order.getTransactionId())
             .payload(order)
             .createdAt(LocalDateTime.now())
             .build();
+        eventService.save(event);
+        return event;
     }
 }

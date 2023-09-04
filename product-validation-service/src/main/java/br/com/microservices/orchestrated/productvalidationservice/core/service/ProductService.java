@@ -4,8 +4,6 @@ import br.com.microservices.orchestrated.productvalidationservice.config.excepti
 import br.com.microservices.orchestrated.productvalidationservice.core.dto.Event;
 import br.com.microservices.orchestrated.productvalidationservice.core.dto.History;
 import br.com.microservices.orchestrated.productvalidationservice.core.dto.OrderProducts;
-import br.com.microservices.orchestrated.productvalidationservice.core.enums.ESagaExecution;
-import br.com.microservices.orchestrated.productvalidationservice.core.enums.ESagaStatus;
 import br.com.microservices.orchestrated.productvalidationservice.core.model.Validation;
 import br.com.microservices.orchestrated.productvalidationservice.core.producer.KafkaProducer;
 import br.com.microservices.orchestrated.productvalidationservice.core.repository.ProductRepository;
@@ -17,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
+import static br.com.microservices.orchestrated.productvalidationservice.core.enums.ESagaStatus.*;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Slf4j
@@ -76,24 +75,21 @@ public class ProductService {
     }
 
     private void handleSuccess(Event event) {
-        event.setStatus(ESagaStatus.SUCCESS);
+        event.setStatus(SUCCESS);
         event.setSource(CURRENT_SOURCE);
-        event.setCurrentExecuted(ESagaExecution.CURRENT_IS_SUCCESS);
         addHistory(event, "Products are validated successfully!");
     }
 
     private void handleFailCurrentNotExecuted(Event event, String message) {
-        event.setStatus(ESagaStatus.FAIL);
+        event.setStatus(ROLLBACK_PENDING);
         event.setSource(CURRENT_SOURCE);
-        event.setCurrentExecuted(ESagaExecution.CURRENT_FAIL_PENDING_ROLLBACK);
         addHistory(event, "Fail to validate products: ".concat(message));
     }
 
     public void rollbackEvent(Event event) {
         changeValidationToFail(event.getPayload().getId(), event.getTransactionId());
-        event.setStatus(ESagaStatus.FAIL);
+        event.setStatus(FAIL);
         event.setSource(CURRENT_SOURCE);
-        event.setCurrentExecuted(ESagaExecution.CURRENT_FAIL_EXECUTED_ROLLBACK);
         addHistory(event, "Rollback executed on product validation!");
         producer.sendEvent(jsonUtil.toJson(event));
     }

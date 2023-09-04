@@ -27,7 +27,7 @@ public class EventService {
         var order = (LinkedHashMap) event.getPayload();
         event.setOrderId((String) order.get(ID));
         event.setCreatedAt(LocalDateTime.now());
-        repository.save(event);
+        save(event);
         log.info("Order {} with saga notified! TransactionId: {}", event.getOrderId(), event.getTransactionId());
     }
 
@@ -60,5 +60,9 @@ public class EventService {
         return repository
             .findTop1ByOrderIdOrderByCreatedAtDesc(orderId)
             .orElseThrow(() -> new ValidationException("Event not found by orderID."));
+    }
+
+    public Event save(Event event) {
+        return repository.save(event);
     }
 }

@@ -5,8 +5,6 @@ import br.com.microservices.orchestrated.paymentservice.core.dto.Event;
 import br.com.microservices.orchestrated.paymentservice.core.dto.History;
 import br.com.microservices.orchestrated.paymentservice.core.dto.OrderProducts;
 import br.com.microservices.orchestrated.paymentservice.core.enums.EPaymentStatus;
-import br.com.microservices.orchestrated.paymentservice.core.enums.ESagaExecution;
-import br.com.microservices.orchestrated.paymentservice.core.enums.ESagaStatus;
 import br.com.microservices.orchestrated.paymentservice.core.model.Payment;
 import br.com.microservices.orchestrated.paymentservice.core.producer.KafkaProducer;
 import br.com.microservices.orchestrated.paymentservice.core.repository.PaymentRepository;
@@ -16,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+
+import static br.com.microservices.orchestrated.paymentservice.core.enums.ESagaStatus.*;
 
 @Slf4j
 @Service
@@ -97,9 +97,8 @@ public class PaymentService {
     }
 
     private void handleSuccess(Event event) {
-        event.setStatus(ESagaStatus.SUCCESS);
+        event.setStatus(SUCCESS);
         event.setSource(CURRENT_SOURCE);
-        event.setCurrentExecuted(ESagaExecution.CURRENT_IS_SUCCESS);
         addHistory(event, "Payment realized successfully!");
     }
 
@@ -115,9 +114,8 @@ public class PaymentService {
     }
 
     private void handleFailCurrentNotExecuted(Event event, String message) {
-        event.setStatus(ESagaStatus.FAIL);
+        event.setStatus(ROLLBACK_PENDING);
         event.setSource(CURRENT_SOURCE);
-        event.setCurrentExecuted(ESagaExecution.CURRENT_FAIL_PENDING_ROLLBACK);
         addHistory(event, "Fail to realize payment: ".concat(message));
     }
 
@@ -128,9 +126,8 @@ public class PaymentService {
 
     public void realizeRefund(Event event) {
         changePaymentStatusToRefund(event);
-        event.setStatus(ESagaStatus.FAIL);
+        event.setStatus(FAIL);
         event.setSource(CURRENT_SOURCE);
-        event.setCurrentExecuted(ESagaExecution.CURRENT_FAIL_EXECUTED_ROLLBACK);
         addHistory(event, "Rollback executed for payment!");
         producer.sendEvent(jsonUtil.toJson(event));
     }

@@ -5,8 +5,6 @@ import br.com.microservices.orchestrated.inventoryservice.core.dto.Event;
 import br.com.microservices.orchestrated.inventoryservice.core.dto.History;
 import br.com.microservices.orchestrated.inventoryservice.core.dto.Order;
 import br.com.microservices.orchestrated.inventoryservice.core.dto.OrderProducts;
-import br.com.microservices.orchestrated.inventoryservice.core.enums.ESagaExecution;
-import br.com.microservices.orchestrated.inventoryservice.core.enums.ESagaStatus;
 import br.com.microservices.orchestrated.inventoryservice.core.model.Inventory;
 import br.com.microservices.orchestrated.inventoryservice.core.model.OrderInventory;
 import br.com.microservices.orchestrated.inventoryservice.core.producer.KafkaProducer;
@@ -18,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+
+import static br.com.microservices.orchestrated.inventoryservice.core.enums.ESagaStatus.*;
 
 @Slf4j
 @Service
@@ -91,9 +91,8 @@ public class InventoryService {
     }
 
     private void handleSuccess(Event event) {
-        event.setStatus(ESagaStatus.SUCCESS);
+        event.setStatus(SUCCESS);
         event.setSource(CURRENT_SOURCE);
-        event.setCurrentExecuted(ESagaExecution.CURRENT_IS_SUCCESS);
         addHistory(event, "Inventory updated successfully!");
     }
 
@@ -109,17 +108,15 @@ public class InventoryService {
     }
 
     private void handleFailCurrentNotExecuted(Event event, String message) {
-        event.setStatus(ESagaStatus.FAIL);
+        event.setStatus(ROLLBACK_PENDING);
         event.setSource(CURRENT_SOURCE);
-        event.setCurrentExecuted(ESagaExecution.CURRENT_FAIL_PENDING_ROLLBACK);
         addHistory(event, "Fail to update inventory: ".concat(message));
     }
 
     public void rollbackInventory(Event event) {
         returnInventoryToPreviousValues(event);
-        event.setStatus(ESagaStatus.FAIL);
+        event.setStatus(FAIL);
         event.setSource(CURRENT_SOURCE);
-        event.setCurrentExecuted(ESagaExecution.CURRENT_FAIL_EXECUTED_ROLLBACK);
         addHistory(event, "Rollback executed for inventory!");
         producer.sendEvent(jsonUtil.toJson(event));
     }

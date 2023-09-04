@@ -1,6 +1,5 @@
 package br.com.microservices.orchestrated.inventoryservice.core.dto;
 
-import br.com.microservices.orchestrated.inventoryservice.core.enums.ESagaExecution;
 import br.com.microservices.orchestrated.inventoryservice.core.enums.ESagaStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +24,6 @@ public class Event {
     private Order payload;
     private String source;
     private ESagaStatus status;
-    private ESagaExecution currentExecuted;
     private List<History> eventHistory;
     private LocalDateTime createdAt;
 
