@@ -235,6 +235,8 @@ Resposta:
         "quantity": 1
       }
     ],
+    "totalAmount": 56.40,
+    "totalItems": 4,
     "createdAt": "2023-04-21T14:32:56.335943085",
     "transactionId": "1682087576536_99d2ca6c-f074-41a6-92e0-21700148b519"
   },
