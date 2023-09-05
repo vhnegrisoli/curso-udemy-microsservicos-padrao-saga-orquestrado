@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaStatus.ROLLBACK_PENDING;
 import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaStatus.SUCCESS;
+import static br.com.microservices.orchestrated.orchestratorservice.core.saga.SagaHandler.*;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Slf4j
@@ -28,12 +29,18 @@ public class SagaExecutionController {
     }
 
     private ETopics findTopicBySourceAndStatus(Event event) {
-        return Arrays.stream(ESagaFlow.values())
-            .filter(flow -> flow.getSource().equals(event.getSource())
-                && flow.getStatus().equals(event.getStatus()))
+        return (ETopics) (Arrays.stream(SAGA_HANDLER)
+            .filter(row -> isEventSourceAndStatusValid(event, row))
+            .map(i -> i[TOPIC_INDEX])
             .findFirst()
-            .orElseThrow(() -> new ValidationException("Topic not found."))
-            .getTopic();
+            .orElseThrow(() -> new ValidationException("Topic not found!")));
+    }
+
+    private boolean isEventSourceAndStatusValid(Event event,
+                                                Object[] row) {
+        var source = row[EVENT_SOURCE_INDEX];
+        var status = row[SAGA_STATUS_INDEX];
+        return source.equals(event.getSource()) && status.equals(event.getStatus());
     }
 
     private void logCurrentSaga(Event event, ETopics topic) {
