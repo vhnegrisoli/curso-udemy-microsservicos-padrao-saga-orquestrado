@@ -16,7 +16,7 @@ services:
   
   product-db:
     container_name: product-db
-    image: postgres:12.5-alpine
+    image: postgres:latest
     environment:
       POSTGRES_DB: product-db
       POSTGRES_USER: postgres
@@ -29,7 +29,7 @@ services:
   
   payment-db:
     container_name: payment-db
-    image: postgres:12.5-alpine
+    image: postgres:latest
     environment:
       POSTGRES_DB: payment-db
       POSTGRES_USER: postgres
@@ -42,7 +42,7 @@ services:
   
   inventory-db:
     container_name: inventory-db
-    image: postgres:12.5-alpine
+    image: postgres:latest
     environment:
       POSTGRES_DB: inventory-db
       POSTGRES_USER: postgres
