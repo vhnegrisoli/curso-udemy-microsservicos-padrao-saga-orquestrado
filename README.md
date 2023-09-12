@@ -279,6 +279,34 @@ Resposta:
 }
 ```
 
+### Acesso ao MongoDB
+
+Para conectar-se ao MongoDB via linha de comando (cli) diretamente do docker-compose, basta executar o comando abaixo:
+
+**docker exec -it order-db mongosh "mongodb://admin:123456@localhost:27017"**
+
+Para listar os bancos de dados existentes:
+
+**show dbs**
+
+Para selecionar um banco de dados:
+
+**use admin**
+
+Para visualizar as collections do banco:
+
+**show collections**
+
+Para realizar queries e validar se os dados existem:
+
+**db.order.find()**
+
+**db.event.find()**
+
+**db.order.find(id=ObjectId("65006786d715e21bd38d1634"))**
+
+**db.order.find({ "products.product.code": "COMIC_BOOKS"})**
+
 ## Autor
 
 ### Victor Hugo Negrisoli

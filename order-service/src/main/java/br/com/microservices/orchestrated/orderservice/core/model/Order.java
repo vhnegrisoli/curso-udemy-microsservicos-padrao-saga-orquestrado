@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "event")
+@Document(collection = "order")
 public class Order {
 
     @Id
