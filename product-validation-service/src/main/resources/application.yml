@@ -17,17 +17,10 @@ spring:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:product-db}
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
-    initialization-mode: always
-    initialize: true
-    continue-on-error: true
-    platform: postgresql
-    maxActive: 3
 
   jpa:
     hibernate:
       ddl-auto: create-drop
-      format_sql: true
-    show_sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
