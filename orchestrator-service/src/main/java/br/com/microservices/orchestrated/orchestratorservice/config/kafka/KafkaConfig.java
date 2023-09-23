@@ -1,6 +1,5 @@
 package br.com.microservices.orchestrated.orchestratorservice.config.kafka;
 
-import br.com.microservices.orchestrated.orchestratorservice.core.enums.ETopics;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -17,8 +16,7 @@ import org.springframework.kafka.core.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ETopics.BASE_ORCHESTRATOR;
-import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ETopics.START_SAGA;
+import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ETopics.*;
 
 @EnableKafka
 @Configuration
@@ -29,13 +27,28 @@ public class KafkaConfig {
     private static final Integer REPLICA_COUNT = 1;
 
     @Value("${spring.kafka.bootstrap-servers}")
-    private String BOOTSTRAP_SERVERS;
+    private String bootstrapServers;
 
     @Value("${spring.kafka.consumer.group-id}")
     private String groupId;
 
     @Value("${spring.kafka.consumer.auto-offset-reset}")
     private String autoOffsetReset;
+
+    @Value("${spring.kafka.topic.start-saga}")
+    private String startSagaTopic;
+
+    @Value("${spring.kafka.topic.notify-ending}")
+    private String notifyEndingTopic;
+
+    @Value("${spring.kafka.topic.orchestrator}")
+    private String orchestratorTopic;
+
+    @Value("${spring.kafka.topic.product-validation-success}")
+    private String productValidationSuccessTopic;
+
+    @Value("${spring.kafka.topic.product-validation-fail}")
+    private String productValidationFailTopic;
 
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
@@ -44,7 +57,7 @@ public class KafkaConfig {
 
     private Map<String, Object> consumerProps() {
         var props = new HashMap<String, Object>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -59,7 +72,7 @@ public class KafkaConfig {
 
     private Map<String, Object> producerProps() {
         var props = new HashMap<String, Object>();
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         return props;
@@ -90,41 +103,41 @@ public class KafkaConfig {
 
     @Bean
     public NewTopic finishSuccessTopic() {
-        return buildTopic(ETopics.FINISH_SUCCESS.getTopic());
+        return buildTopic(FINISH_SUCCESS.getTopic());
     }
 
     @Bean
     public NewTopic finishFailTopic() {
-        return buildTopic(ETopics.FINISH_FAIL.getTopic());
+        return buildTopic(FINISH_FAIL.getTopic());
     }
 
     @Bean
     public NewTopic productValidationSuccessTopic() {
-        return buildTopic(ETopics.PRODUCT_VALIDATION_SUCCESS.getTopic());
+        return buildTopic(PRODUCT_VALIDATION_SUCCESS.getTopic());
     }
 
     @Bean
     public NewTopic productValidationFailTopic() {
-        return buildTopic(ETopics.PRODUCT_VALIDATION_FAIL.getTopic());
+        return buildTopic(PRODUCT_VALIDATION_FAIL.getTopic());
     }
 
     @Bean
     public NewTopic paymentSuccessTopic() {
-        return buildTopic(ETopics.PAYMENT_SUCCESS.getTopic());
+        return buildTopic(PAYMENT_SUCCESS.getTopic());
     }
 
     @Bean
     public NewTopic paymentValidationFailTopic() {
-        return buildTopic(ETopics.PAYMENT_FAIL.getTopic());
+        return buildTopic(PAYMENT_FAIL.getTopic());
     }
 
     @Bean
     public NewTopic inventoryValidationSuccessTopic() {
-        return buildTopic(ETopics.INVENTORY_SUCCESS.getTopic());
+        return buildTopic(INVENTORY_SUCCESS.getTopic());
     }
 
     @Bean
     public NewTopic inventoryValidationFailTopic() {
-        return buildTopic(ETopics.INVENTORY_FAIL.getTopic());
+        return buildTopic(INVENTORY_FAIL.getTopic());
     }
 }
