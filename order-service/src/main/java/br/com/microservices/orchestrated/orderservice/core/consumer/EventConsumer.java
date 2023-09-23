@@ -1,6 +1,6 @@
 package br.com.microservices.orchestrated.orderservice.core.consumer;
 
-import br.com.microservices.orchestrated.orderservice.core.model.Event;
+import br.com.microservices.orchestrated.orderservice.core.document.Event;
 import br.com.microservices.orchestrated.orderservice.core.service.EventService;
 import br.com.microservices.orchestrated.orderservice.core.utils.JsonUtil;
 import lombok.AllArgsConstructor;

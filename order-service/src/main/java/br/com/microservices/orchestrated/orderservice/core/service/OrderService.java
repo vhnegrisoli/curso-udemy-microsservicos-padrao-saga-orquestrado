@@ -1,8 +1,8 @@
 package br.com.microservices.orchestrated.orderservice.core.service;
 
 import br.com.microservices.orchestrated.orderservice.core.dto.OrderRequest;
-import br.com.microservices.orchestrated.orderservice.core.model.Event;
-import br.com.microservices.orchestrated.orderservice.core.model.Order;
+import br.com.microservices.orchestrated.orderservice.core.document.Event;
+import br.com.microservices.orchestrated.orderservice.core.document.Order;
 import br.com.microservices.orchestrated.orderservice.core.producer.SagaProducer;
 import br.com.microservices.orchestrated.orderservice.core.repository.OrderRepository;
 import br.com.microservices.orchestrated.orderservice.core.utils.JsonUtil;

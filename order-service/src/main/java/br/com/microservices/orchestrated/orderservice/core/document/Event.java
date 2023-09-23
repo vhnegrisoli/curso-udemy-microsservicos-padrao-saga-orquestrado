@@ -1,4 +1,4 @@
-package br.com.microservices.orchestrated.orderservice.core.model;
+package br.com.microservices.orchestrated.orderservice.core.document;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,19 +14,16 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "order")
-public class Order {
+@Document(collection = "event")
+public class Event {
 
     @Id
     private String id;
-
-    private List<OrderProducts> products;
-
-    private LocalDateTime createdAt;
-
     private String transactionId;
-
-    private Double totalAmount;
-
-    private Integer totalItems;
+    private String orderId;
+    private Object payload;
+    private String source;
+    private String status;
+    private List<Object> eventHistory;
+    private LocalDateTime createdAt;
 }
