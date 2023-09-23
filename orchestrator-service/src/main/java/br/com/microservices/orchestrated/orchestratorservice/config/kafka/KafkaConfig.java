@@ -35,21 +35,6 @@ public class KafkaConfig {
     @Value("${spring.kafka.consumer.auto-offset-reset}")
     private String autoOffsetReset;
 
-    @Value("${spring.kafka.topic.start-saga}")
-    private String startSagaTopic;
-
-    @Value("${spring.kafka.topic.notify-ending}")
-    private String notifyEndingTopic;
-
-    @Value("${spring.kafka.topic.orchestrator}")
-    private String orchestratorTopic;
-
-    @Value("${spring.kafka.topic.product-validation-success}")
-    private String productValidationSuccessTopic;
-
-    @Value("${spring.kafka.topic.product-validation-fail}")
-    private String productValidationFailTopic;
-
     @Bean
     public ConsumerFactory<String, String> consumerFactory() {
         return new DefaultKafkaConsumerFactory<>(consumerProps());

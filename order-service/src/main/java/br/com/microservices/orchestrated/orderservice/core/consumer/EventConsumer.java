@@ -1,6 +1,5 @@
 package br.com.microservices.orchestrated.orderservice.core.consumer;
 
-import br.com.microservices.orchestrated.orderservice.core.document.Event;
 import br.com.microservices.orchestrated.orderservice.core.service.EventService;
 import br.com.microservices.orchestrated.orderservice.core.utils.JsonUtil;
 import lombok.AllArgsConstructor;
@@ -22,8 +21,7 @@ public class EventConsumer {
     )
     public void consumeStartSagaEvent(String payload) {
         log.info("Recieving ending notification event {} from notify-ending topic", payload);
-        var response = jsonUtil.toEvent(payload);
-        var event = jsonUtil.toObject(response, Event.class);
+        var event = jsonUtil.toEvent(payload);
         service.notifyEnding(event);
     }
 }

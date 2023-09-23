@@ -1,6 +1,6 @@
 package br.com.microservices.orchestrated.orderservice.core.utils;
 
-import br.com.microservices.orchestrated.orderservice.core.dto.EventResponse;
+import br.com.microservices.orchestrated.orderservice.core.document.Event;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,17 +21,9 @@ public class JsonUtil {
         }
     }
 
-    public EventResponse toEvent(String json) {
+    public Event toEvent(String json) {
         try {
-            return objectMapper.readValue(json, EventResponse.class);
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    public <T> T toObject(Object object, Class<T> classType) {
-        try {
-            return objectMapper.convertValue(object, classType);
+            return objectMapper.readValue(json, Event.class);
         } catch (Exception ex) {
             return null;
         }
