@@ -22,7 +22,7 @@ public class Event {
     private String id;
     private String orderId;
     private String transactionId;
-    private Object payload;
+    private Order payload;
     private EEventSource source;
     private ESagaStatus status;
     private List<History> eventHistory;
