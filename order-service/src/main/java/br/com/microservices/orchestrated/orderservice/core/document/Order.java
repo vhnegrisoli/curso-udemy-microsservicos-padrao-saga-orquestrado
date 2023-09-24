@@ -19,14 +19,9 @@ public class Order {
 
     @Id
     private String id;
-
     private List<OrderProducts> products;
-
     private LocalDateTime createdAt;
-
     private String transactionId;
-
-    private Double totalAmount;
-
-    private Integer totalItems;
+    private double totalAmount;
+    private int totalItems;
 }
