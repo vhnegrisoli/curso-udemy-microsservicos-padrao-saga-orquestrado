@@ -20,7 +20,7 @@ public class InventoryConsumer {
         topics = "${spring.kafka.topic.inventory-success}"
     )
     public void consumerSuccessTopic(String payload) {
-        log.info("Recieving success event {} from inventory-success topic", payload);
+        log.info("Receiving success event {} from inventory-success topic", payload);
         var event = jsonUtil.toEvent(payload);
         inventoryService.updateInventory(event);
     }
@@ -30,7 +30,7 @@ public class InventoryConsumer {
         topics = "${spring.kafka.topic.inventory-fail}"
     )
     public void consumerFailTopic(String payload) {
-        log.info("Recieving rollback event {} from inventory-fail topic", payload);
+        log.info("Receiving rollback event {} from inventory-fail topic", payload);
         var event = jsonUtil.toEvent(payload);
         inventoryService.rollbackInventory(event);
     }

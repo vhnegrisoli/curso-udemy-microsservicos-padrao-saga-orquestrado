@@ -20,7 +20,7 @@ public class PaymentConsumer {
         topics = "${spring.kafka.topic.payment-success}"
     )
     public void consumerSuccessTopic(String payload) {
-        log.info("Recieving success event {} from payment-success topic", payload);
+        log.info("Receiving success event {} from payment-success topic", payload);
         var event = jsonUtil.toEvent(payload);
         paymentService.realizePayment(event);
     }
@@ -30,7 +30,7 @@ public class PaymentConsumer {
         topics = "${spring.kafka.topic.payment-fail}"
     )
     public void consumerFailTopic(String payload) {
-        log.info("Recieving rollback event {} from payment-fail topic", payload);
+        log.info("Receiving rollback event {} from payment-fail topic", payload);
         var event = jsonUtil.toEvent(payload);
         paymentService.realizeRefund(event);
     }
