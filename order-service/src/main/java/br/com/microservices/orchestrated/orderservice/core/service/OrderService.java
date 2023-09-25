@@ -1,14 +1,13 @@
 package br.com.microservices.orchestrated.orderservice.core.service;
 
-import br.com.microservices.orchestrated.orderservice.core.dto.OrderRequest;
 import br.com.microservices.orchestrated.orderservice.core.document.Event;
 import br.com.microservices.orchestrated.orderservice.core.document.Order;
+import br.com.microservices.orchestrated.orderservice.core.dto.OrderRequest;
 import br.com.microservices.orchestrated.orderservice.core.producer.SagaProducer;
 import br.com.microservices.orchestrated.orderservice.core.repository.OrderRepository;
 import br.com.microservices.orchestrated.orderservice.core.utils.JsonUtil;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -17,7 +16,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class OrderService {
 
     private static final String TRANSACTION_ID_PATTERN = "%s_%s";
@@ -26,8 +25,6 @@ public class OrderService {
     private final SagaProducer producer;
     private final JsonUtil jsonUtil;
     private final OrderRepository repository;
-    @Value("${spring.kafka.topic.start-saga}")
-    private String startSagaTopic;
 
     public Order createOrder(OrderRequest orderRequest) {
         var order = new Order();
@@ -38,7 +35,7 @@ public class OrderService {
         order.setTransactionId(
             String.format(TRANSACTION_ID_PATTERN, Instant.now().toEpochMilli(), UUID.randomUUID())
         );
-        producer.sendEvent(jsonUtil.toJson(createPayload(order)), startSagaTopic);
+        producer.sendEvent(jsonUtil.toJson(createPayload(order)));
         return order;
     }
 
