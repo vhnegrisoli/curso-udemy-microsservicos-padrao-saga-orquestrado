@@ -242,7 +242,6 @@ Resposta:
   },
   "source": "ORCHESTRATOR",
   "status": "SUCCESS",
-  "currentExecuted": "CURRENT_IS_SUCCESS",
   "eventHistory": [
     {
       "source": "ORCHESTRATOR",

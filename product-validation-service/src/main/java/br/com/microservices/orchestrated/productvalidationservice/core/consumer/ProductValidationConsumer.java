@@ -19,7 +19,7 @@ public class ProductValidationConsumer {
         groupId = "${spring.kafka.consumer.group-id}",
         topics = "${spring.kafka.topic.product-validation-success}"
     )
-    public void consumerSuccessTopic(String payload) {
+    public void consumeSuccessEvent(String payload) {
         log.info("Receiving success event {} from product-validation-success topic", payload);
         var event = jsonUtil.toEvent(payload);
         productService.validateExistingProducts(event);
@@ -29,7 +29,7 @@ public class ProductValidationConsumer {
         groupId = "${spring.kafka.consumer.group-id}",
         topics = "${spring.kafka.topic.product-validation-fail}"
     )
-    public void consumerFailTopic(String payload) {
+    public void consumeFailEvent(String payload) {
         log.info("Receiving rollback event {} from product-validation-fail topic", payload);
         var event = jsonUtil.toEvent(payload);
         productService.rollbackEvent(event);
