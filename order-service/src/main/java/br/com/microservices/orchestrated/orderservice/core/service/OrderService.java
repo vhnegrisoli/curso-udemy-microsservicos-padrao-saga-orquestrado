@@ -27,14 +27,14 @@ public class OrderService {
     private final OrderRepository repository;
 
     public Order createOrder(OrderRequest orderRequest) {
-        var order = new Order();
-        order.setProducts(orderRequest.getProducts());
-        var now = LocalDateTime.now();
-        order.setCreatedAt(now);
+        var order = Order
+            .builder()
+            .products(orderRequest.getProducts())
+            .createdAt(LocalDateTime.now())
+            .transactionId(
+                String.format(TRANSACTION_ID_PATTERN, Instant.now().toEpochMilli(), UUID.randomUUID()))
+            .build();
         repository.save(order);
-        order.setTransactionId(
-            String.format(TRANSACTION_ID_PATTERN, Instant.now().toEpochMilli(), UUID.randomUUID())
-        );
         producer.sendEvent(jsonUtil.toJson(createPayload(order)));
         return order;
     }
