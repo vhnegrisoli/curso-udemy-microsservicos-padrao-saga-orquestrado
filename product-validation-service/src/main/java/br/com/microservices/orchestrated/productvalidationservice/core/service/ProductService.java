@@ -32,13 +32,8 @@ public class ProductService {
 
     public void validateExistingProducts(Event event) {
         try {
-            checkCurrentValidation(event.getPayload().getId(), event.getTransactionId());
+            checkCurrentValidation(event);
             createValidation(event, true);
-            validateProductsInformed(event);
-            event.getPayload().getProducts().forEach(product -> {
-                validateProductInformed(product);
-                validateExistingProduct(product.getProduct().getCode());
-            });
             handleSuccess(event);
         } catch (Exception ex) {
             log.error("Error trying to validate product: ", ex);
@@ -56,6 +51,18 @@ public class ProductService {
         }
     }
 
+    private void checkCurrentValidation(Event event) {
+        validateProductsInformed(event);
+        if (validationRepository.existsByOrderIdAndTransactionId(
+            event.getOrderId(), event.getTransactionId())) {
+            throw new ValidationException("There's another transactionId for this validation.");
+        }
+        event.getPayload().getProducts().forEach(product -> {
+            validateProductInformed(product);
+            validateExistingProduct(product.getProduct().getCode());
+        });
+    }
+
     private void validateProductInformed(OrderProducts product) {
         if (isEmpty(product.getProduct()) || isEmpty(product.getProduct().getCode())) {
             throw new ValidationException("Product must be informed!");
@@ -65,12 +72,6 @@ public class ProductService {
     private void validateExistingProduct(String code) {
         if (!productRepository.existsByCode(code)) {
             throw new ValidationException("Product does not exists in database!");
-        }
-    }
-
-    private void checkCurrentValidation(String orderId, String transactionId) {
-        if (validationRepository.existsByOrderIdAndTransactionId(orderId, transactionId)) {
-            throw new ValidationException("There's another transactionId for this validation.");
         }
     }
 
@@ -87,7 +88,7 @@ public class ProductService {
     }
 
     public void rollbackEvent(Event event) {
-        changeValidationToFail(event.getPayload().getId(), event.getTransactionId());
+        changeValidationToFail(event);
         event.setStatus(FAIL);
         event.setSource(CURRENT_SOURCE);
         addHistory(event, "Rollback executed on product validation!");
@@ -115,11 +116,13 @@ public class ProductService {
         validationRepository.save(validation);
     }
 
-    private void changeValidationToFail(String orderId, String transactionId) {
-        var validation = validationRepository
-            .findByOrderIdAndTransactionId(orderId, transactionId)
-            .orElseThrow(() -> new ValidationException("Validation does not exists for order and transaction."));
-        validation.setSuccess(false);
-        validationRepository.save(validation);
+    private void changeValidationToFail(Event event) {
+        validationRepository
+            .findByOrderIdAndTransactionId(event.getOrderId(), event.getTransactionId())
+            .ifPresentOrElse(validation -> {
+                    validation.setSuccess(false);
+                    validationRepository.save(validation);
+                },
+                () -> createValidation(event, false));
     }
 }
