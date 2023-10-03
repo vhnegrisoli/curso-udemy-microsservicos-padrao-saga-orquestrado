@@ -75,10 +75,31 @@ public class ProductService {
         }
     }
 
+    private void createValidation(Event event, boolean success) {
+        var validation = Validation
+            .builder()
+            .orderId(event.getPayload().getId())
+            .transactionId(event.getTransactionId())
+            .success(success)
+            .build();
+        validationRepository.save(validation);
+    }
+
     private void handleSuccess(Event event) {
         event.setStatus(SUCCESS);
         event.setSource(CURRENT_SOURCE);
         addHistory(event, "Products are validated successfully!");
+    }
+
+    private void addHistory(Event event, String message) {
+        var history = History
+            .builder()
+            .source(event.getSource())
+            .status(event.getStatus())
+            .message(message)
+            .createdAt(LocalDateTime.now())
+            .build();
+        event.addToHistory(history);
     }
 
     private void handleFailCurrentNotExecuted(Event event, String message) {
@@ -93,27 +114,6 @@ public class ProductService {
         event.setSource(CURRENT_SOURCE);
         addHistory(event, "Rollback executed on product validation!");
         producer.sendEvent(jsonUtil.toJson(event));
-    }
-
-    private void addHistory(Event event, String message) {
-        var history = History
-            .builder()
-            .source(event.getSource())
-            .status(event.getStatus())
-            .message(message)
-            .createdAt(LocalDateTime.now())
-            .build();
-        event.addToHistory(history);
-    }
-
-    private void createValidation(Event event, boolean success) {
-        var validation = Validation
-            .builder()
-            .orderId(event.getPayload().getId())
-            .transactionId(event.getTransactionId())
-            .success(success)
-            .build();
-        validationRepository.save(validation);
     }
 
     private void changeValidationToFail(Event event) {
