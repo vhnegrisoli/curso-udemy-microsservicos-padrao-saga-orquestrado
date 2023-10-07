@@ -23,8 +23,8 @@ import static br.com.microservices.orchestrated.paymentservice.core.enums.ESagaS
 public class PaymentService {
 
     private static final String CURRENT_SOURCE = "PAYMENT_SERVICE";
-    private static final double MIN_VALUE_AMOUNT = 0.1;
     private static final Double REDUCE_SUM_VALUE = 0.0;
+    private static final Double MIN_VALUE_AMOUNT = 0.1;
 
     private final JsonUtil jsonUtil;
     private final KafkaProducer producer;
@@ -65,17 +65,6 @@ public class PaymentService {
         setEventAmountItems(event, payment);
     }
 
-    private void changePaymentToSuccess(Payment payment) {
-        payment.setStatus(EPaymentStatus.SUCCESS);
-        save(payment);
-    }
-
-    private void validateAmount(double amount) {
-        if (amount < MIN_VALUE_AMOUNT) {
-            throw new ValidationException("The minimal amount available is ".concat(String.valueOf(MIN_VALUE_AMOUNT)));
-        }
-    }
-
     private double calculateAmount(Event event) {
         return event
             .getPayload()
@@ -97,6 +86,17 @@ public class PaymentService {
     private void setEventAmountItems(Event event, Payment payment) {
         event.getPayload().setTotalAmount(payment.getTotalAmount());
         event.getPayload().setTotalItems(payment.getTotalItems());
+    }
+
+    private void validateAmount(double amount) {
+        if (amount < MIN_VALUE_AMOUNT) {
+            throw new ValidationException("The minimal amount available is ".concat(String.valueOf(MIN_VALUE_AMOUNT)));
+        }
+    }
+
+    private void changePaymentToSuccess(Payment payment) {
+        payment.setStatus(EPaymentStatus.SUCCESS);
+        save(payment);
     }
 
     private void handleSuccess(Event event) {
