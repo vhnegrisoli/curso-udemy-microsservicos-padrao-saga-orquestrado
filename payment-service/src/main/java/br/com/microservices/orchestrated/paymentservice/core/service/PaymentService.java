@@ -32,11 +32,9 @@ public class PaymentService {
 
     public void realizePayment(Event event) {
         try {
-            var orderId = event.getPayload().getId();
-            var transactionId = event.getTransactionId();
-            checkCurrentValidation(orderId, transactionId);
+            checkCurrentValidation(event);
             createPendingPayment(event);
-            var payment = findByOrderIdAndTransactionId(orderId, transactionId);
+            var payment = findByOrderIdAndTransactionId(event);
             validateAmount(payment.getTotalAmount());
             changePaymentToSuccess(payment);
             handleSuccess(event);
@@ -47,8 +45,8 @@ public class PaymentService {
         producer.sendEvent(jsonUtil.toJson(event));
     }
 
-    private void checkCurrentValidation(String orderId, String transactionId) {
-        if (paymentRepository.existsByOrderIdAndTransactionId(orderId, transactionId)) {
+    private void checkCurrentValidation(Event event) {
+        if (paymentRepository.existsByOrderIdAndTransactionId(event.getPayload().getId(), event.getTransactionId())) {
             throw new ValidationException("There's another transactionId for this validation.");
         }
     }
@@ -96,6 +94,11 @@ public class PaymentService {
             .reduce(REDUCE_SUM_VALUE.intValue(), Integer::sum);
     }
 
+    private void setEventAmountItems(Event event, Payment payment) {
+        event.getPayload().setTotalAmount(payment.getTotalAmount());
+        event.getPayload().setTotalItems(payment.getTotalItems());
+    }
+
     private void handleSuccess(Event event) {
         event.setStatus(SUCCESS);
         event.setSource(CURRENT_SOURCE);
@@ -119,11 +122,6 @@ public class PaymentService {
         addHistory(event, "Fail to realize payment: ".concat(message));
     }
 
-    private void setEventAmountItems(Event event, Payment payment) {
-        event.getPayload().setTotalAmount(payment.getTotalAmount());
-        event.getPayload().setTotalItems(payment.getTotalItems());
-    }
-
     public void realizeRefund(Event event) {
         changePaymentStatusToRefund(event);
         event.setStatus(FAIL);
@@ -133,15 +131,15 @@ public class PaymentService {
     }
 
     private void changePaymentStatusToRefund(Event event) {
-        var payment = findByOrderIdAndTransactionId(event.getPayload().getId(), event.getTransactionId());
+        var payment = findByOrderIdAndTransactionId(event);
         payment.setStatus(EPaymentStatus.REFUND);
         setEventAmountItems(event, payment);
         save(payment);
     }
 
-    private Payment findByOrderIdAndTransactionId(String orderId, String transactionId) {
+    private Payment findByOrderIdAndTransactionId(Event event) {
         return paymentRepository
-            .findByOrderIdAndTransactionId(orderId, transactionId)
+            .findByOrderIdAndTransactionId(event.getPayload().getId(), event.getTransactionId())
             .orElseThrow(() -> new ValidationException("Payment not found by orderID and transactionID"));
     }
 
