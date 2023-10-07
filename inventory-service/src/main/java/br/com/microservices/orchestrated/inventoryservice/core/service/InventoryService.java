@@ -33,7 +33,7 @@ public class InventoryService {
 
     public void updateInventory(Event event) {
         try {
-            checkCurrentValidation(event.getPayload().getId(), event.getTransactionId());
+            checkCurrentValidation(event);
             createOrderInventory(event);
             updateInventory(event.getPayload());
             handleSuccess(event);
@@ -44,20 +44,36 @@ public class InventoryService {
         producer.sendEvent(jsonUtil.toJson(event));
     }
 
-    private void checkCurrentValidation(String orderId, String transactionId) {
-        if (orderInventoryRepository.existsByOrderIdAndTransactionId(orderId, transactionId)) {
+    private void checkCurrentValidation(Event event) {
+        if (orderInventoryRepository.existsByOrderIdAndTransactionId(
+            event.getPayload().getId(), event.getTransactionId())) {
             throw new ValidationException("There's another transactionId for this validation.");
         }
     }
 
     private void createOrderInventory(Event event) {
-        event.getPayload().getProducts()
+        event
+            .getPayload()
+            .getProducts()
             .forEach(product -> {
                 var inventory = findInventoryByProductCode(product.getProduct().getCode());
-                var orderInventory = createOrderInventory(
-                    event.getPayload().getId(), event.getTransactionId(), product, inventory);
+                var orderInventory = createOrderInventory(event, product, inventory);
                 orderInventoryRepository.save(orderInventory);
             });
+    }
+
+    private OrderInventory createOrderInventory(Event event,
+                                                OrderProducts product,
+                                                Inventory inventory) {
+        return OrderInventory
+            .builder()
+            .inventory(inventory)
+            .oldQuantity(inventory.getAvailable())
+            .orderQuantity(product.getQuantity())
+            .newQuantity(inventory.getAvailable() - product.getQuantity())
+            .orderId(event.getPayload().getId())
+            .transactionId(event.getTransactionId())
+            .build();
     }
 
     private void updateInventory(Order order) {
@@ -73,21 +89,6 @@ public class InventoryService {
         if (orderQuantity > available) {
             throw new ValidationException("Product is out of stock!");
         }
-    }
-
-    private OrderInventory createOrderInventory(String orderId,
-                                                String transactionId,
-                                                OrderProducts product,
-                                                Inventory inventory) {
-        return OrderInventory
-            .builder()
-            .inventory(inventory)
-            .oldQuantity(inventory.getAvailable())
-            .orderQuantity(product.getQuantity())
-            .newQuantity(inventory.getAvailable() - product.getQuantity())
-            .orderId(orderId)
-            .transactionId(transactionId)
-            .build();
     }
 
     private void handleSuccess(Event event) {
@@ -114,10 +115,14 @@ public class InventoryService {
     }
 
     public void rollbackInventory(Event event) {
-        returnInventoryToPreviousValues(event);
         event.setStatus(FAIL);
         event.setSource(CURRENT_SOURCE);
-        addHistory(event, "Rollback executed for inventory!");
+        try {
+            returnInventoryToPreviousValues(event);
+            addHistory(event, "Rollback executed for inventory!");
+        } catch (Exception ex) {
+            addHistory(event, "Rollback not executed for inventory: ".concat(ex.getMessage()));
+        }
         producer.sendEvent(jsonUtil.toJson(event));
     }
 
