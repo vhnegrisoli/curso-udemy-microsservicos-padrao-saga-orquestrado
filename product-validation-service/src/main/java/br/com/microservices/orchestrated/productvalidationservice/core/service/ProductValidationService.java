@@ -21,7 +21,7 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class ProductService {
+public class ProductValidationService {
 
     private static final String CURRENT_SOURCE = "PRODUCT_VALIDATION_SERVICE";
 
