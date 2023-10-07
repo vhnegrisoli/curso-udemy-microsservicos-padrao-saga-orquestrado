@@ -46,14 +46,13 @@ public class SagaExecutionController {
     private void logCurrentSaga(Event event, ETopics topic) {
         if (SUCCESS.equals(event.getStatus())) {
             log.info("### CURRENT SAGA: {} | SUCCESS | NEXT TOPIC {} - EVENT: {}", event.getSource(), topic, event.getId());
+        }
+        if (ROLLBACK_PENDING.equals(event.getStatus())) {
+            log.info("### CURRENT SAGA: {} | SENDING TO ROLLBACK CURRENT SERVICE | NEXT TOPIC {} - EVENT: {}",
+                event.getSource(), topic, event.getId());
         } else {
-            if (ROLLBACK_PENDING.equals(event.getStatus())) {
-                log.info("### CURRENT SAGA: {} | SENDING TO ROLLBACK CURRENT SERVICE | NEXT TOPIC {} - EVENT: {}",
-                    event.getSource(), topic, event.getId());
-            } else {
-                log.info("### CURRENT SAGA: {} | SENDING TO ROLLBACK PREVIOUS SERVICE | NEXT TOPIC {} - EVENT: {}",
-                    event.getSource(), topic, event.getId());
-            }
+            log.info("### CURRENT SAGA: {} | SENDING TO ROLLBACK PREVIOUS SERVICE | NEXT TOPIC {} - EVENT: {}",
+                event.getSource(), topic, event.getId());
         }
     }
 }
