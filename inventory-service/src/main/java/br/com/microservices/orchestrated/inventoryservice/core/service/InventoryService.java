@@ -130,18 +130,12 @@ public class InventoryService {
         orderInventoryRepository
             .findByOrderIdAndTransactionId(event.getPayload().getId(), event.getTransactionId())
             .forEach(orderInventory -> {
-                var inventory = findById(orderInventory.getInventory().getId());
+                var inventory = orderInventory.getInventory();
                 inventory.setAvailable(orderInventory.getOldQuantity());
                 inventoryRepository.save(inventory);
                 log.info("Restored inventory for order {}: from {} to {}",
-                    event.getPayload().getId(), orderInventory.getOldQuantity(), inventory.getAvailable());
+                    event.getPayload().getId(), orderInventory.getNewQuantity(), inventory.getAvailable());
             });
-    }
-
-    private Inventory findById(Integer id) {
-        return inventoryRepository
-            .findById(id)
-            .orElseThrow(() -> new ValidationException("Inventory not found by id."));
     }
 
     private Inventory findInventoryByProductCode(String productCode) {
