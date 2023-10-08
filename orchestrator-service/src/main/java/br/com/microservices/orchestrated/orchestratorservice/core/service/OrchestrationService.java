@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 import static br.com.microservices.orchestrated.orchestratorservice.core.enums.EEventSource.ORCHESTRATOR;
-import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaStatus.*;
+import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaStatus.FAIL;
+import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaStatus.SUCCESS;
 
 @Slf4j
 @Service
@@ -30,7 +31,7 @@ public class OrchestrationService {
         var topic = getTopic(event);
         log.info("SAGA STARTED!");
         addHistory(event, "Saga started!");
-        producer.sendEvent(jsonUtil.toJson(event), topic.getTopic());
+        sendToProducerWithTopic(event, topic);
     }
 
     public void finishSagaSuccess(Event event) {
@@ -52,7 +53,7 @@ public class OrchestrationService {
     public void continueSaga(Event event) {
         var topic = getTopic(event);
         log.info("SAGA CONTINUING FOR EVENT {}", event.getId());
-        producer.sendEvent(jsonUtil.toJson(event), topic.getTopic());;
+        sendToProducerWithTopic(event, topic);
     }
 
     private ETopics getTopic(Event event) {
@@ -68,6 +69,10 @@ public class OrchestrationService {
             .createdAt(LocalDateTime.now())
             .build();
         event.addToHistory(history);
+    }
+
+    private void sendToProducerWithTopic(Event event, ETopics topic) {
+        producer.sendEvent(jsonUtil.toJson(event), topic.getTopic());
     }
 
     private void notifyFinishedSaga(Event event) {
