@@ -9,15 +9,16 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
-import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaStatus.ROLLBACK_PENDING;
-import static br.com.microservices.orchestrated.orchestratorservice.core.enums.ESagaStatus.SUCCESS;
 import static br.com.microservices.orchestrated.orchestratorservice.core.saga.SagaHandler.*;
+import static java.lang.String.format;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Slf4j
 @Component
 @AllArgsConstructor
 public class SagaExecutionController {
+
+    private static final String SAGA_LOG_ID = "ORDER ID: %s | TRANSACTION ID %s | EVENT ID %s";
 
     public ETopics getNextTopic(Event event) {
         if (isEmpty(event.getSource()) || isEmpty(event.getStatus())) {
@@ -44,15 +45,20 @@ public class SagaExecutionController {
     }
 
     private void logCurrentSaga(Event event, ETopics topic) {
-        if (SUCCESS.equals(event.getStatus())) {
-            log.info("### CURRENT SAGA: {} | SUCCESS | NEXT TOPIC {} - EVENT: {}", event.getSource(), topic, event.getId());
+        var sagaId = createSagaId(event);
+        var source = event.getSource();
+        switch (event.getStatus()) {
+            case SUCCESS -> log.info("### CURRENT SAGA: {} | SUCCESS | NEXT TOPIC {} | {}",
+                source, topic, sagaId);
+            case ROLLBACK_PENDING -> log.info("### CURRENT SAGA: {} | SENDING TO ROLLBACK CURRENT SERVICE | NEXT TOPIC {} | {}",
+                source, topic, sagaId);
+            case FAIL -> log.info("### CURRENT SAGA: {} | SENDING TO ROLLBACK PREVIOUS SERVICE | NEXT TOPIC {} | {}",
+                source, topic, sagaId);
         }
-        if (ROLLBACK_PENDING.equals(event.getStatus())) {
-            log.info("### CURRENT SAGA: {} | SENDING TO ROLLBACK CURRENT SERVICE | NEXT TOPIC {} - EVENT: {}",
-                event.getSource(), topic, event.getId());
-        } else {
-            log.info("### CURRENT SAGA: {} | SENDING TO ROLLBACK PREVIOUS SERVICE | NEXT TOPIC {} - EVENT: {}",
-                event.getSource(), topic, event.getId());
-        }
+    }
+
+    private String createSagaId(Event event) {
+        return format(SAGA_LOG_ID,
+            event.getPayload().getId(), event.getTransactionId(), event.getId());
     }
 }
