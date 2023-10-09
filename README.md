@@ -1,8 +1,11 @@
 # Projeto: Curso Udemy - Arquitetura de Microsserviços: Padrão Saga Orquestrado
 
-Repositório contendo o projeto desenvolvido do curso Arquitetura de Microsserviços: Padrão Saga Orquestrado, ministrado por mim para a plataforma Udemy.
+Repositório contendo o projeto desenvolvido do curso Arquitetura de Microsserviços: Padrão Saga Orquestrado, ministrado por mim para a plataforma 
+**Udemy**.
 
 Para acessar o curso na plataforma, basta acessar esta URL: https://www.udemy.com/course/arquitetura-microsservicos-padrao-saga-orquestrado/ (ainda não publicado)
+
+![Arquitetura](Conte%C3%BAdos/Imagem%20Curso.png)
 
 ### Sumário:
 
