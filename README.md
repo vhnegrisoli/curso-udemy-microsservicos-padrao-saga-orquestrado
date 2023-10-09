@@ -24,6 +24,8 @@ Para acessar o curso na plataforma, basta acessar esta URL: https://www.udemy.co
 
 ## Tecnologias
 
+[Voltar ao início](#sum%C3%A1rio)
+
 * **Java 17**
 * **Spring Boot 3**
 * **Apache Kafka**
@@ -36,15 +38,19 @@ Para acessar o curso na plataforma, basta acessar esta URL: https://www.udemy.co
 
 # Ferramentas utilizadas
 
+[Voltar ao início](#sum%C3%A1rio)
+
 * **IntelliJ IDEA Community Edition**
 * **Docker**
 * **Gradle**
 
 # Arquitetura Proposta
 
+[Voltar ao início](#sum%C3%A1rio)
+
 No curso, desenvolveremos a seguinte aquitetura:
 
-![Arquitetura](https://github.com/vhnegrisoli/curso-udemy-microsservicos-padrao-saga-orquestrado/blob/main/Conte%C3%BAdos/Arquitetura%20Proposta.png)
+![Arquitetura](Conte%C3%BAdos/Arquitetura%20Proposta.png)
 
 Em nossa arquitetura, teremos 5 serviços:
 
@@ -57,6 +63,8 @@ Em nossa arquitetura, teremos 5 serviços:
 Todos os serviços da arquitetura irão subir através do arquivo **docker-compose.yml**.
 
 ## Execução do projeto
+
+[Voltar ao início](#sum%C3%A1rio)
 
 Há várias maneiras de executar os projetos:
 
@@ -73,6 +81,8 @@ Para rodar as aplicações, será necessário ter instalado:
 
 ### 01 - Execução geral via docker-compose
 
+[Voltar ao nível anterior](#execu%C3%A7%C3%A3o-do-projeto)
+
 Basta executar o comando no diretório raiz do repositório:
 
 `docker-compose up --build -d`
@@ -80,6 +90,8 @@ Basta executar o comando no diretório raiz do repositório:
 **Obs.: para rodar tudo desta maneira, é necessário realizar o build das 5 aplicações, veja nos passos abaixo sobre como fazer isto.**
 
 ### 02 - Execução geral via automação com script em Python
+
+[Voltar ao nível anterior](#execu%C3%A7%C3%A3o-do-projeto)
 
 Basta executar o arquivo `build.py`. Para isto, **é necessário ter o Python 3 instalado**.
 
@@ -90,6 +102,8 @@ Para executar, basta apenas executar o seguinte comando no diretório raiz do re
 Será realizado o `build` de todas as aplicações, removidos todos os containers e em sequência, será rodado o `docker-compose`.
 
 ### 03 - Executando os serviços de bancos de dados e Message Broker
+
+[Voltar ao nível anterior](#execu%C3%A7%C3%A3o-do-projeto)
 
 Para que seja possível executar os serviços de bancos de dados e Message Broker, como MongoDB, PostgreSQL e Apache Kafka, basta ir no diretório raiz do repositório, onde encontra-se o arquivo `docker-compose.yml` e executar o comando:
 
@@ -108,6 +122,8 @@ Ou então:
 
 ### 04 - Executando manualmente via CLI
 
+[Voltar ao nível anterior](#execu%C3%A7%C3%A3o-do-projeto)
+
 Antes da execução do projeto, realize o `build` da aplicação indo no diretório raiz e executando o comando:
 
 `gradle build -x test`
@@ -120,7 +136,9 @@ Ou então, entrar no diretório: `build/libs` e executar o comando:
 
 `java -jar nome_do_jar.jar`
 
-### Acessando a aplicação
+## Acessando a aplicação
+
+[Voltar ao início](#sum%C3%A1rio)
 
 Para acessar as aplicações e realizar um pedido, basta acessar a URL:
 
@@ -128,7 +146,7 @@ http://localhost:3000/swagger-ui.html
 
 Você chegará nesta página:
 
-![Swagger](https://github.com/vhnegrisoli/curso-udemy-microsservicos-padrao-saga-orquestrado/blob/main/Conte%C3%BAdos/Documentacao.png)
+![Swagger](Conte%C3%BAdos/Documentacao.png)
 
 As aplicações executarão nas seguintes portas:
 
@@ -144,7 +162,9 @@ As aplicações executarão nas seguintes portas:
 * PostgreSQL (Inventory-DB): 5434
 * MongoDB (Order-DB): 27017
 
-### Acessando tópicos com Redpanda Console
+## Acessando tópicos com Redpanda Console
+
+[Voltar ao início](#sum%C3%A1rio)
 
 Para acessar o Redpanda Console e visualizar tópicos e publicar eventos, basta acessar:
 
@@ -152,13 +172,17 @@ http://localhost:8081
 
 Você chegará nesta página:
 
-![Redpanda](https://github.com/vhnegrisoli/curso-udemy-microsservicos-padrao-saga-orquestrado/blob/main/Conte%C3%BAdos/Redpanda%20Kafka.png)
+![Redpanda](Conte%C3%BAdos/Redpanda%20Kafka.png)
 
 ## Dados da API
+
+[Voltar ao início](#sum%C3%A1rio)
 
 É necessário conhecer o payload de envio ao fluxo da saga, assim como os produtos cadastrados e suas quantidades.
 
 ### Produtos registrados e seu estoque
+
+[Voltar ao nível anterior](#dados-da-api)
 
 Existem 3 produtos iniciais cadastrados no serviço `product-validation-service` e suas quantidades disponíveis em `inventory-service`: 
 
@@ -168,6 +192,8 @@ Existem 3 produtos iniciais cadastrados no serviço `product-validation-service`
 * **MUSIC** (9 em estoque)
 
 ### Endpoint para iniciar a saga:
+
+[Voltar ao nível anterior](#dados-da-api)
 
 **POST** http://localhost:3000/api/order
 
@@ -221,6 +247,8 @@ Resposta:
 ```
 
 ### Endpoint para visualizar a saga:
+
+[Voltar ao nível anterior](#dados-da-api)
 
 É possível recuperar os dados da saga pelo **orderId** ou pelo **transactionId**, o resultado será o mesmo:
 
@@ -297,6 +325,8 @@ Resposta:
 ```
 
 ### Acesso ao MongoDB
+
+[Voltar ao início](#sum%C3%A1rio)
 
 Para conectar-se ao MongoDB via linha de comando (cli) diretamente do docker-compose, basta executar o comando abaixo:
 
